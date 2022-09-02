@@ -11,6 +11,9 @@ scraper = Scraper(base_url)
 @app.get("/")
 def read_root():
     # ret = scraper.check_update("results.html", "2022-08-01")
-    ret = scraper.get_newest_data("results.html", "2022-08-01")
+    isUpdated = scraper.get_newest_filename("results.html", "2022-08-01")
 
-    return {"ret": ret}
+    if isUpdated:
+        return scraper.get_excel_url()
+    else:
+        return "Not modified."

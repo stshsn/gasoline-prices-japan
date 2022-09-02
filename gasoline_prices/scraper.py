@@ -7,10 +7,9 @@ from requests.models import Response
 
 
 class Scraper:
-    base_url: str = ""
-
     def __init__(self, base_url: str) -> None:
-        self.base_url = base_url
+        self.base_url: str = base_url
+        self.excel_filename: str = ""
 
     def check_update(self, url: str, current_data: str) -> bool:
         res: Response = requests_head(self.base_url + url)
@@ -22,7 +21,7 @@ class Scraper:
         else:
             return False
 
-    def get_newest_data(self, url: str, current_data: str) -> tuple:
+    def get_newest_filename(self, url: str, current_data: str) -> bool:
         current_datetime: datetime = datetime.fromisoformat(current_data)
 
         with requests_get(self.base_url + url, stream=True) as res:
@@ -30,9 +29,13 @@ class Scraper:
 
             if last_modified > current_datetime:
                 excel_filename: str = self.__get_excel_filename(res.content)
-                return (True, self.base_url + excel_filename)
+                self.excel_filename = excel_filename
+                return True
             else:
-                return (False, "")
+                return False
+
+    def get_excel_url(self) -> str:
+        return self.base_url + self.excel_filename
 
     def __get_excel_filename(self, raw_html: bytes) -> str:
         raw_data = bs(raw_html, "lxml")
