@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+from gasoline_prices.parser import Parser
 from gasoline_prices.scraper import Scraper
 
 app = FastAPI()
@@ -14,6 +15,8 @@ def read_root():
     isUpdated = scraper.get_newest_filename("results.html", "2022-08-01")
 
     if isUpdated:
-        return scraper.get_excel_url()
+        parser = Parser(scraper.get_excel_url())
+        parser.fetch_excel_file()
+        return parser.parse_excel_file()
     else:
         return "Not modified."

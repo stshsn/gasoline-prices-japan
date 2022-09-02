@@ -13,6 +13,7 @@ requests = "^2.28.1"
 bs4 = "^0.0.1"
 lxml = "^4.9.1"
 types-requests = "^2.28.9"
+xlrd = "^2.0.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
