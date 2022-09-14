@@ -1,22 +1,65 @@
-from fastapi import FastAPI
+from datetime import datetime
 
+from fastapi import FastAPI
+from sqlalchemy import func
+
+from gasoline_prices.database import AsyncSess, database
+from gasoline_prices.models.prices import Price
 from gasoline_prices.parser import Parser
 from gasoline_prices.scraper import Scraper
 
 app = FastAPI()
+
+
+@app.on_event("startup")
+async def startup():
+    await database.connect()
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    await database.disconnect()
+
 
 base_url: str = "https://www.enecho.meti.go.jp/statistics/petroleum_and_lpgas/pl007/"
 scraper = Scraper(base_url)
 
 
 @app.get("/")
-def read_root():
+async def read_root():
     # ret = scraper.check_update("results.html", "2022-08-01")
-    isUpdated = scraper.get_newest_filename("results.html", "2022-08-01")
+    latest_updated_at = await Price.get_latest_updated_at()
+    print(latest_updated_at)
+    if latest_updated_at is None:
+        latest_updated_at = datetime.fromisoformat("1900-01-01")
+    isUpdated = scraper.get_newest_filename("results.html", latest_updated_at)
 
     if isUpdated:
-        parser = Parser(scraper.get_excel_url())
+        excel_url = scraper.get_excel_url()
+        parser = Parser(excel_url)
         parser.fetch_excel_file()
-        return parser.parse_excel_file()
+        prices_dict = parser.parse_excel_file()
+        for oil_type in prices_dict.keys():
+            if oil_type == "hi_octane":
+                oil_type_id = 1
+            elif oil_type == "regular":
+                oil_type_id = 2
+            price_history = prices_dict[oil_type]
+            for price_data in price_history:
+                price = Price(
+                    oil_type_id=oil_type_id,
+                    survey_date=price_data["survey_date"],
+                    price=price_data["price"],
+                    ref_price=price_data["ref_price"],
+                )
+                async with AsyncSess() as session:
+                    price_record = await Price.read_by_type_and_date(price, session)
+                    if price_record:
+                        price.updated_at = func.now()
+                        await price_record.update(price, session)
+                        await session.commit()
+                    else:
+                        await Price.create(price)
+        return "New data found! Updated."
     else:
         return "Not modified."

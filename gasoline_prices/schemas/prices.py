@@ -23,3 +23,16 @@ class PriceCreate(BaseModel):
     survey_date: date
     price: int
     ref_price: float
+
+
+class PriceRead(BaseModel):
+    oil_type_id: int
+    survey_date: date
+
+
+class PriceUpdate(BaseModel):
+    updated_at: datetime
+    oil_type_id: int
+    survey_date: date
+    price: int
+    ref_price: float

@@ -21,9 +21,7 @@ class Scraper:
         else:
             return False
 
-    def get_newest_filename(self, url: str, current_data: str) -> bool:
-        current_datetime: datetime = datetime.fromisoformat(current_data)
-
+    def get_newest_filename(self, url: str, current_datetime: datetime) -> bool:
         with requests_get(self.base_url + url, stream=True) as res:
             last_modified: datetime = datetime.strptime(res.headers["Last-Modified"], "%a, %d %b %Y %H:%M:%S %Z")
 
