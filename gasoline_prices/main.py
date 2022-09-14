@@ -3,7 +3,7 @@ from datetime import datetime
 from fastapi import FastAPI
 from sqlalchemy import func
 
-from gasoline_prices.database import AsyncSess, database
+from gasoline_prices.database import async_session, database
 from gasoline_prices.models.prices import Price
 from gasoline_prices.parser import Parser
 from gasoline_prices.scraper import Scraper
@@ -25,8 +25,8 @@ base_url: str = "https://www.enecho.meti.go.jp/statistics/petroleum_and_lpgas/pl
 scraper = Scraper(base_url)
 
 
-@app.get("/")
-async def read_root():
+@app.get("/update")
+async def update_data():
     # ret = scraper.check_update("results.html", "2022-08-01")
     latest_updated_at = await Price.get_latest_updated_at()
     print(latest_updated_at)
@@ -52,7 +52,7 @@ async def read_root():
                     price=price_data["price"],
                     ref_price=price_data["ref_price"],
                 )
-                async with AsyncSess() as session:
+                async with async_session() as session:
                     price_record = await Price.read_by_type_and_date(price, session)
                     if price_record:
                         price.updated_at = func.now()

@@ -5,7 +5,7 @@ from sqlalchemy import Column, Date, DateTime, Float, ForeignKey, Identity, Inte
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from gasoline_prices.database import AsyncSess, Base
+from gasoline_prices.database import Base, async_session
 from gasoline_prices.models.oil_types import OilType  # noqa: F401
 from gasoline_prices.schemas.prices import PriceCreate, PriceRead, PriceUpdate
 
@@ -21,7 +21,7 @@ class Price(Base):
     ref_price = Column(Float, nullable=False)
 
     @classmethod
-    async def create(self, price: PriceCreate, session: AsyncSession = AsyncSess()):
+    async def create(self, price: PriceCreate, session: AsyncSession = async_session()):
         async with session.begin():
             try:
                 session.add(price)
@@ -32,7 +32,7 @@ class Price(Base):
                 return True
 
     @classmethod
-    async def read_by_type_and_date(self, price: PriceRead, session: AsyncSession = AsyncSess()):
+    async def read_by_type_and_date(self, price: PriceRead, session: AsyncSession = async_session()):
         statement = select(self).where(self.oil_type_id == price.oil_type_id, self.survey_date == price.survey_date)
         result = (await session.execute(statement)).first()
         if result:
@@ -49,7 +49,7 @@ class Price(Base):
         await session.flush()
 
     @classmethod
-    async def get_latest_updated_at(self, session: AsyncSession = AsyncSess()) -> Optional[datetime]:
+    async def get_latest_updated_at(self, session: AsyncSession = async_session()) -> Optional[datetime]:
         statement = select(self).order_by(desc(self.updated_at)).limit(1)
         result = (await session.execute(statement)).first()
         if result:
