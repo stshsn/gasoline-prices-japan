@@ -25,6 +25,13 @@ base_url: str = "https://www.enecho.meti.go.jp/statistics/petroleum_and_lpgas/pl
 scraper = Scraper(base_url)
 
 
+@app.get("/get")
+async def get_all():
+    ret = await Price.read_all()
+    print(type(ret[0]))
+    return ret
+
+
 @app.get("/update")
 async def update_data():
     # ret = scraper.check_update("results.html", "2022-08-01")
