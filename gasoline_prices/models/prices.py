@@ -62,6 +62,25 @@ class Price(Base):
         else:
             return None
 
+    @classmethod
+    async def read_by_type_and_range(
+        self, oil_type: list, start: datetime, end: datetime, session: AsyncSession = async_session()
+    ):
+        statement = (
+            select(self)
+            .where(self.oil_type_id.in_(list(oil_type)), self.survey_date >= start, self.survey_date <= end)
+            .options(joinedload(self.oil_type))
+        )
+        result = (await session.execute(statement)).all()
+        price_list = []
+        if result:
+            for r in result:
+                r.Price.parse_sqlalchemy_object()
+                price_list.append(r.Price)
+            return price_list
+        else:
+            return None
+
     async def update(self, price: PriceUpdate, session: AsyncSession) -> None:
         self.updated_at = price.updated_at
         self.oil_type_id = price.oil_type_id

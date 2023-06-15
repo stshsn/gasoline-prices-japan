@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from fastapi import FastAPI
 from sqlalchemy import func
@@ -27,11 +27,21 @@ data_source_url: str = "https://www.enecho.meti.go.jp/statistics/petroleum_and_l
 scraper = Scraper(data_source_url)
 
 
-@app.get("/get")
+@app.get("/get/")
+async def read_by_type_and_range(
+    oil_type, start: datetime = datetime.now() - timedelta(days=40), end: datetime = datetime.now()
+):
+    ret = await Price.read_by_type_and_range(oil_type, start, end)
+    return ret
+
+
+"""
+@app.get("/debug/")
 async def get_all():
     ret = await Price.read_all()
     print(type(ret[0]))
     return ret
+"""
 
 
 @app.get("/update")
