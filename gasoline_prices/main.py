@@ -6,6 +6,7 @@ from sqlalchemy import func
 from gasoline_prices.database import async_session, database
 from gasoline_prices.models.prices import Price
 from gasoline_prices.parser import Parser
+from gasoline_prices.schemas.misc import Status
 from gasoline_prices.scraper import Scraper
 
 app = FastAPI()
@@ -21,8 +22,9 @@ async def shutdown():
     await database.disconnect()
 
 
-base_url: str = "https://www.enecho.meti.go.jp/statistics/petroleum_and_lpgas/pl007/"
-scraper = Scraper(base_url)
+data_source_title: str = "石油製品価格調査 - 経済産業省 資源エネルギー庁"
+data_source_url: str = "https://www.enecho.meti.go.jp/statistics/petroleum_and_lpgas/pl007/"
+scraper = Scraper(data_source_url)
 
 
 @app.get("/get")
@@ -72,9 +74,13 @@ async def update_data():
         return "Not modified."
 
 
-@app.get("/status")
+@app.get("/status", response_model=Status)
 async def get_status():
     last_updated_at = await Price.get_latest_updated_at()
     return {
         "last_updated": last_updated_at,
+        "data_source": {
+            "title": data_source_title,
+            "url": data_source_url,
+        },
     }
