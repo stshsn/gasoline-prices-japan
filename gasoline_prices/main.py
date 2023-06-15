@@ -70,3 +70,11 @@ async def update_data():
         return "New data found! Updated."
     else:
         return "Not modified."
+
+
+@app.get("/status")
+async def get_status():
+    last_updated_at = await Price.get_latest_updated_at()
+    return {
+        "last_updated": last_updated_at,
+    }

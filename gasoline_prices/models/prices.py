@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from sqlalchemy import Column, Date, DateTime, Float, ForeignKey, Identity, Integer, SmallInteger, desc, func
@@ -76,6 +76,7 @@ class Price(Base):
         result = (await session.execute(statement)).first()
         if result:
             updated_at: datetime = result.Price.updated_at
+            updated_at = updated_at.replace(tzinfo=timezone.utc)
             return updated_at
         else:
             return None

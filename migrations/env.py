@@ -7,8 +7,8 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from gasoline_prices.database import DATABASE_URL, Base
-from gasoline_prices.models.oil_types import OilTypes  # noqa: F401
-from gasoline_prices.models.prices import Prices  # noqa: F401
+from gasoline_prices.models.oil_types import OilType  # noqa: F401
+from gasoline_prices.models.prices import Price  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
