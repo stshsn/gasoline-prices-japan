@@ -4,10 +4,12 @@
   },
   "editor.formatOnSave": true,
   "python.defaultInterpreterPath": "${workspaceRoot}/.venv/bin/python",
+  "python.formatting.blackPath": "${workspaceRoot}/.venv/bin/black",
   "python.formatting.provider": "black",
   "python.linting.flake8Enabled": true,
   "python.linting.flake8Path": "${workspaceRoot}/.venv/bin/flake8p",
   "python.linting.mypyEnabled": true,
+  "python.linting.mypyPath": "${workspaceRoot}/.venv/bin/mypy",
   "python.linting.pylintEnabled": false,
   "python.testing.pytestArgs": [
     "tests"
