@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from bs4 import BeautifulSoup as bs
 from requests import get as requests_get
@@ -24,7 +24,8 @@ class Scraper:
     def get_newest_filename(self, url: str, current_datetime: datetime) -> bool:
         with requests_get(self.base_url + url, stream=True) as res:
             last_modified: datetime = datetime.strptime(res.headers["Last-Modified"], "%a, %d %b %Y %H:%M:%S %Z")
-
+            if last_modified.tzinfo is None:
+                last_modified = last_modified.replace(tzinfo=timezone.utc)
             if last_modified > current_datetime:
                 excel_filename: str = self.__get_excel_filename(res.content)
                 self.excel_filename = excel_filename

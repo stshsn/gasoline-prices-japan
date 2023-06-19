@@ -27,7 +27,7 @@ data_source_url: str = "https://www.enecho.meti.go.jp/statistics/petroleum_and_l
 scraper = Scraper(data_source_url)
 
 
-@app.get("/get/")
+@app.get("/gasoline/get/")
 async def read_by_type_and_range(
     oil_type, start: datetime = datetime.now() - timedelta(days=40), end: datetime = datetime.now()
 ):
@@ -44,7 +44,7 @@ async def get_all():
 """
 
 
-@app.get("/update")
+@app.get("/gasoline/update")
 async def update_data():
     # ret = scraper.check_update("results.html", "2022-08-01")
     latest_updated_at = await Price.get_latest_updated_at()
@@ -84,7 +84,7 @@ async def update_data():
         return "Not modified."
 
 
-@app.get("/status", response_model=Status)
+@app.get("/gasoline/status", response_model=Status)
 async def get_status():
     last_updated_at = await Price.get_latest_updated_at()
     return {
