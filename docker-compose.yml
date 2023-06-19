@@ -1,0 +1,15 @@
+version: "3.5"
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: ./docker/Dockerfile
+        image: gasoline-prices:${IMAGE_TAG:-latest}
+        container_name: "gasoline-prices"
+        restart: always
+        ports:
+            - "8000:8000"
+        volumes:
+            - ./db:/opt/app/db
+        working_dir: /opt/app
