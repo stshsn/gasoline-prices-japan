@@ -23,8 +23,9 @@ async def shutdown():
 
 
 data_source_title: str = "石油製品価格調査 - 経済産業省 資源エネルギー庁"
-data_source_url: str = "https://www.enecho.meti.go.jp/statistics/petroleum_and_lpgas/pl007/"
-scraper = Scraper(data_source_url)
+data_source_base_url: str = "https://www.enecho.meti.go.jp/statistics/petroleum_and_lpgas/pl007/"
+data_source_html: str = "results.html"
+scraper = Scraper(data_source_base_url)
 
 
 @app.get("/gasoline/get/")
@@ -46,12 +47,12 @@ async def get_all():
 
 @app.get("/gasoline/update")
 async def update_data():
-    # ret = scraper.check_update("results.html", "2022-08-01")
+    # ret = scraper.check_update(data_source_html, "2022-08-01")
     latest_updated_at = await Price.get_latest_updated_at()
     print(latest_updated_at)
     if latest_updated_at is None:
         latest_updated_at = datetime.fromisoformat("1900-01-01")
-    isUpdated = scraper.get_newest_filename("results.html", latest_updated_at)
+    isUpdated = scraper.get_newest_filename(data_source_html, latest_updated_at)
 
     if isUpdated:
         excel_url = scraper.get_excel_url()
@@ -91,6 +92,6 @@ async def get_status():
         "last_updated": last_updated_at,
         "data_source": {
             "title": data_source_title,
-            "url": data_source_url,
+            "url": data_source_base_url + data_source_html,
         },
     }
