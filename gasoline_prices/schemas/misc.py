@@ -11,3 +11,7 @@ class DataSource(BaseModel):
 class Status(BaseModel):
     last_updated: datetime
     data_source: DataSource
+
+
+class UpdateStatus(BaseModel):
+    message: str

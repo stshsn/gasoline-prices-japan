@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, status
 from sqlalchemy import func
 
 from gasoline_prices.database import async_session, database
 from gasoline_prices.models.prices import Price
 from gasoline_prices.parser import Parser
-from gasoline_prices.schemas.misc import Status
+from gasoline_prices.schemas.misc import Status, UpdateStatus
 from gasoline_prices.scraper import Scraper
 
 app = FastAPI()
@@ -45,13 +45,13 @@ async def get_all():
 """
 
 
-@app.get("/gasoline/update")
-async def update_data():
+@app.get("/gasoline/update", response_model=UpdateStatus)
+async def update_data(response: Response):
     # ret = scraper.check_update(data_source_html, "2022-08-01")
     latest_updated_at = await Price.get_latest_updated_at()
     print(latest_updated_at)
     if latest_updated_at is None:
-        latest_updated_at = datetime.fromisoformat("1900-01-01")
+        latest_updated_at = datetime.fromisoformat("1900-01-01T00:00:00+00:00")
     isUpdated = scraper.get_newest_filename(data_source_html, latest_updated_at)
 
     if isUpdated:
@@ -80,9 +80,12 @@ async def update_data():
                         await session.commit()
                     else:
                         await Price.create(price)
-        return "New data found! Updated."
+        response.status_code = status.HTTP_200_OK
+        return {"message": "New data found! Updated."}
     else:
-        return "Not modified."
+        response.status_code = status.HTTP_304_NOT_MODIFIED
+        # when status code is 304 response-body must be empty
+        return {"message": "Not modified."}
 
 
 @app.get("/gasoline/status", response_model=Status)
