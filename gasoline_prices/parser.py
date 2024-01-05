@@ -13,11 +13,14 @@ REF_COL: int = 15  # "P"
 
 
 class Parser:
-    def __init__(self, excel_url: str) -> None:
+    def __init__(self, excel_url: str, user_agent: str) -> None:
         self.excel_url: str = excel_url
+        self.user_agent: str = user_agent
 
     def fetch_excel_file(self) -> bool:
-        excel_data: bytes = requests_get(self.excel_url).content
+        headers = {"User-Agent": self.user_agent}
+        print(f"GET {self.excel_url}")
+        excel_data: bytes = requests_get(self.excel_url, headers=headers).content
         self.excel_data: BinaryIO = BytesIO(excel_data)
 
         return True

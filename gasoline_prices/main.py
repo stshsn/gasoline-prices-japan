@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from fastapi import FastAPI, Response, status
+from fastapi import FastAPI, Header, Response, status
 from sqlalchemy import func
 
 from gasoline_prices.database import async_session, database
@@ -46,17 +46,18 @@ async def get_all():
 
 
 @app.get("/gasoline/update", response_model=UpdateStatus)
-async def update_data(response: Response):
+async def update_data(response: Response, user_agent: str = Header(...)):
     # ret = scraper.check_update(data_source_html, "2022-08-01")
     latest_updated_at = await Price.get_latest_updated_at()
     print(latest_updated_at)
+    print(user_agent)
     if latest_updated_at is None:
         latest_updated_at = datetime.fromisoformat("1900-01-01T00:00:00+00:00")
-    isUpdated = scraper.get_newest_filename(data_source_html, latest_updated_at)
+    isUpdated = scraper.get_newest_filename(data_source_html, latest_updated_at, user_agent)
 
     if isUpdated:
         excel_url = scraper.get_excel_url()
-        parser = Parser(excel_url)
+        parser = Parser(excel_url, user_agent)
         parser.fetch_excel_file()
         prices_dict = parser.parse_excel_file()
         for oil_type in prices_dict.keys():

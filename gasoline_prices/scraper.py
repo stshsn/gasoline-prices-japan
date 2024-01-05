@@ -21,14 +21,14 @@ class Scraper:
         else:
             return False
 
-    def get_newest_filename(self, url: str, current_datetime: datetime) -> bool:
-        with requests_get(self.base_url + url, stream=True) as res:
-            print(self.base_url)
+    def get_newest_filename(self, url: str, current_datetime: datetime, user_agent: str) -> bool:
+        headers = {"User-Agent": user_agent}
+        with requests_get(self.base_url + url, stream=True, headers=headers) as res:
+            print(f"GET {self.base_url + url} {res.status_code}")
             last_modified: datetime = datetime.strptime(res.headers["Last-Modified"], "%a, %d %b %Y %H:%M:%S %Z")
             if last_modified.tzinfo is None:
                 last_modified = last_modified.replace(tzinfo=timezone.utc)
-            print(last_modified)
-            print(current_datetime)
+            print(f"LAST:{last_modified}, CURRENT:{current_datetime}")
             if last_modified > current_datetime:
                 excel_filename: str = self.__get_excel_filename(res.content)
                 self.excel_filename = excel_filename
