@@ -1,11 +1,12 @@
 [tool.poetry]
 name = "gasoline-prices"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 authors = ["Satoshi HOSHINO <s-hoshino@ib-sol.co.jp>"]
+package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.12"
 fastapi = "^0.97.0"
 uvicorn = "^0.22.0"
 gunicorn = "^20.1.0"
@@ -13,11 +14,11 @@ requests = "^2.31.0"
 bs4 = "^0.0.1"
 lxml = "^4.9.2"
 types-requests = "^2.31.0.1"
-xlrd = "^2.0.1"
 SQLAlchemy = "^1.4.40"
 alembic = "^1.11.1"
 databases = "^0.7.0"
 aiosqlite = "^0.19.0"
+openpyxl = "^3.1.5"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.2"

@@ -1,4 +1,4 @@
-FROM python:3.11.4-slim-bullseye as builder
+FROM python:3.12.8-slim-bullseye AS builder
 
 WORKDIR /opt/app
 RUN pip3 install poetry
@@ -6,7 +6,7 @@ COPY pyproject.toml poetry.toml poetry.lock ./
 RUN poetry install --only main
 
 
-FROM python:3.11.4-slim-bullseye as runner
+FROM python:3.12.8-slim-bullseye AS runner
 
 RUN useradd -r -s /bin/false uvicornuser
 WORKDIR /opt/app
