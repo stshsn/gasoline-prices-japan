@@ -42,8 +42,9 @@ class Scraper:
     def __get_excel_filename(self, raw_html: bytes) -> str:
         raw_data = bs(raw_html, "lxml")
         main_div = raw_data.find(id="main")
-        result_dl = main_div.find("dl", class_="dlist_n")
-        result_detail = result_dl.find_all("dd")[0]
-        result_excel_anchor = result_detail.find("a", class_="excel")
-        excel_filename: str = result_excel_anchor["href"]
+        result_ul = main_div.find("ul", class_="ulist2")
+        result_detail = result_ul.find_all("li")[1]
+        result_excel_anchor = result_detail.find("a")
+        excel_href_parts: list = result_excel_anchor["href"].split('/')[-2:]
+        excel_filename: str = '/'.join(excel_href_parts)
         return excel_filename
