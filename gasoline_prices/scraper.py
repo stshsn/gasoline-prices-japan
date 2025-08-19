@@ -45,6 +45,6 @@ class Scraper:
         result_ul = main_div.find("ul", class_="ulist2")
         result_detail = result_ul.find_all("li")[1]
         result_excel_anchor = result_detail.find("a")
-        excel_href_parts: list = result_excel_anchor["href"].split('/')[-2:]
+        excel_href_parts: list = result_excel_anchor["href"].split('/')[-1:]
         excel_filename: str = '/'.join(excel_href_parts)
         return excel_filename
