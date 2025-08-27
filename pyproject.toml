@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gasoline-prices"
-version = "0.2.2"
+version = "0.2.3"
 description = ""
 authors = ["Satoshi HOSHINO <s-hoshino@ib-sol.co.jp>"]
 package-mode = false
