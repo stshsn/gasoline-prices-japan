@@ -36,6 +36,12 @@ async def read_by_type_and_range(
     return ret
 
 
+@app.get("/gasoline/get-all/")
+async def read_all():
+    ret = await Price.read_all()
+    return ret
+
+
 """
 @app.get("/debug/")
 async def get_all():
